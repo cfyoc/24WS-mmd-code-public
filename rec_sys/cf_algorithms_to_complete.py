@@ -27,9 +27,10 @@ def fast_cosine_sim(utility_matrix, vector, axis=0):
     # Compute the norms of each column
     norms = np.linalg.norm(utility_matrix, axis=axis)
     um_normalized = utility_matrix / norms
-    # Compute the dot product of transposed normalized matrix and the vector
-    # dot = complete_code("fast_cosine_sim")
-    dot = np.dot(um_normalized, vector)
+
+    # Have to truncate in case they do not match
+    dot = um_normalized @ vector[:np.shape(um_normalized)[1]]
+    # dot = np.dot(um_normalized, vector.reshape)
     # Scale by the vector norm
     scaled = dot / np.linalg.norm(vector)
     return scaled
@@ -90,13 +91,6 @@ def rate_all_items(orig_utility_matrix, user_index, neighborhood_size):
         # Need to cast to int
         best_among_who_rated = best_among_who_rated.astype(int)
 
-        print("After argsort")
-        print(best_among_who_rated)
-
-        print("HERE")
-        print(best_among_who_rated)
-
-        # best_among_who_rated = np.array([1, 0, 2])
         # Select top neighborhood_size of them
         best_among_who_rated = best_among_who_rated[-neighborhood_size:]
 
@@ -112,7 +106,8 @@ def rate_all_items(orig_utility_matrix, user_index, neighborhood_size):
 
         if best_among_who_rated.size > 0:
             # Compute the rating of the item
-            rating_of_item = complete_code("compute the ratings")
+            # rating_of_item = complete_code("compute the ratings")
+            rating_of_item = np.dot(np.sort(similarities)[-neighborhood_size:], best_among_who_rated) / np.sum(similarities)
         else:
             rating_of_item = np.nan
         print(f"item_idx: {item_index}, neighbors: {best_among_who_rated}, rating: {rating_of_item}")

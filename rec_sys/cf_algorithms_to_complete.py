@@ -28,7 +28,8 @@ def fast_cosine_sim(utility_matrix, vector, axis=0):
     norms = np.linalg.norm(utility_matrix, axis=axis)
     um_normalized = utility_matrix / norms
     # Compute the dot product of transposed normalized matrix and the vector
-    dot = complete_code("fast_cosine_sim")
+    # dot = complete_code("fast_cosine_sim")
+    dot = np.dot(um_normalized, vector)
     # Scale by the vector norm
     scaled = dot / np.linalg.norm(vector)
     return scaled
@@ -52,14 +53,63 @@ def rate_all_items(orig_utility_matrix, user_index, neighborhood_size):
 
         # Find the indices of users who rated the item
         users_who_rated = np.where(np.isnan(orig_utility_matrix[item_index, :]) == False)[0]
+
+        # print("user index:")
+        # print(user_index)
+        # print("Item index:")
+        # print(item_index)
+        # print("orig_utility_matrix")
+        # print(orig_utility_matrix)
+        # print("clean_utility_matrix")
+        # print(clean_utility_matrix)
+        # print("Users who rated")
+        # print(users_who_rated)
+        # print("Similarities")
+        # print(similarities)
+        # print("Fast cosine sim of user col")
+        # print(fast_cosine_sim(user_col, user_col))
+
+        # print()
+        # print("neighborhood size:")
+        # print(neighborhood_size)
+        # print("My answer:")
+        # print(similarities[users_who_rated])
+
         # From those, get indices of users with the highest similarity (watch out: result indices are rel. to users_who_rated)
-        best_among_who_rated = complete_code("users with highest similarity")
+        # best_among_who_rated = complete_code("users with highest similarity")
+        # Making rows out of [user's similarity, user] in order to sort for highest similarity
+        best_among_who_rated = np.dstack((similarities[users_who_rated], np.arange(users_who_rated.size)))
+        print("After stack")
+        print(best_among_who_rated[0])
+        # Truncating down list from 3d to 2d
+        best_among_who_rated = best_among_who_rated[0]
+        # Sorting the list by similarities
+        best_among_who_rated = best_among_who_rated[best_among_who_rated[:, 0].argsort()]
+        # Pulling out the list of users now sorted by their similarity
+        best_among_who_rated = best_among_who_rated[:, 1]
+        # Need to cast to int
+        best_among_who_rated = best_among_who_rated.astype(int)
+
+        print("After argsort")
+        print(best_among_who_rated)
+
+        print("HERE")
+        print(best_among_who_rated)
+
+        # best_among_who_rated = np.array([1, 0, 2])
         # Select top neighborhood_size of them
         best_among_who_rated = best_among_who_rated[-neighborhood_size:]
+
+        print("after first best change")
+        print(best_among_who_rated)
         # Convert the indices back to the original utility matrix indices
         best_among_who_rated = users_who_rated[best_among_who_rated]
+        print("after 2nd best change")
+        print(best_among_who_rated)
+
         # Retain only those indices where the similarity is not nan
         best_among_who_rated = best_among_who_rated[np.isnan(similarities[best_among_who_rated]) == False]
+
         if best_among_who_rated.size > 0:
             # Compute the rating of the item
             rating_of_item = complete_code("compute the ratings")

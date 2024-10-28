@@ -2,11 +2,49 @@
 # Algorithms for collaborative filtering
 
 import numpy as np
+import rec_sys.data_util as cfd
+import rec_sys.config as ConfigLf
+import shelve
+
 
 def complete_code(message):
     raise Exception(f"Please complete the code: {message}")
     return None
 
+# New function to handle vector-vector pairs that may have sparse data
+# Using pearson correlation from slide deck 1 slide 36
+def centered_cosine_sim(u, v):
+  
+
+  return None
+
+# New function to handle vector-matrix pairs that may have sparse data
+def fast_centered_cosine_sim():
+  return None
+
+# Exercise 4, generate the python shelves rated_by[] and user_col[] from a dataset
+# for rated_by need to store users who have rated an item id so the dict goes
+# rated_by[item_id] = user_id
+# then user_col is a user and the movie ids they have reviewd
+def generate_shevles():
+  ratings_tf, user_ids_voc, movie_ids_voc = cfd.load_movielens_tf(ConfigLf.ConfigLf)
+
+  rated_by = shelve.open('rated_by_shelf', writeback=True)
+  user_col = shelve.open('user_col_shelf', writeback=True)
+
+  ratings = list(ratings_tf.as_numpy_iterator())
+
+  for i in ratings:
+    rated_by[str(i['movie_id'])] = str(i['user_id'])
+
+    user_col[str(i['user_id'])] = str(i['movie_id'])
+  
+  a = rated_by
+  b = user_col
+  rated_by.close()
+  user_col.close()
+  return a, b 
+ 
 
 def center_and_nan_to_zero(matrix, axis=0):
     """ Center the matrix and replace nan values with zeros"""
@@ -31,6 +69,7 @@ def fast_cosine_sim(utility_matrix, vector, axis=0):
     # Have to truncate in case they do not match
     dot = um_normalized @ vector[:np.shape(um_normalized)[1]]
     # dot = np.dot(um_normalized, vector.reshape)
+
     # Scale by the vector norm
     scaled = dot / np.linalg.norm(vector)
     return scaled
@@ -80,8 +119,7 @@ def rate_all_items(orig_utility_matrix, user_index, neighborhood_size):
         # best_among_who_rated = complete_code("users with highest similarity")
         # Making rows out of [user's similarity, user] in order to sort for highest similarity
         best_among_who_rated = np.dstack((similarities[users_who_rated], np.arange(users_who_rated.size)))
-        print("After stack")
-        print(best_among_who_rated[0])
+
         # Truncating down list from 3d to 2d
         best_among_who_rated = best_among_who_rated[0]
         # Sorting the list by similarities
@@ -94,12 +132,8 @@ def rate_all_items(orig_utility_matrix, user_index, neighborhood_size):
         # Select top neighborhood_size of them
         best_among_who_rated = best_among_who_rated[-neighborhood_size:]
 
-        print("after first best change")
-        print(best_among_who_rated)
         # Convert the indices back to the original utility matrix indices
         best_among_who_rated = users_who_rated[best_among_who_rated]
-        print("after 2nd best change")
-        print(best_among_who_rated)
 
         # Retain only those indices where the similarity is not nan
         best_among_who_rated = best_among_who_rated[np.isnan(similarities[best_among_who_rated]) == False]

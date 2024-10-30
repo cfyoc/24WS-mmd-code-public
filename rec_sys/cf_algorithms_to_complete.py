@@ -14,9 +14,25 @@ def complete_code(message):
 # New function to handle vector-vector pairs that may have sparse data
 # Using pearson correlation from slide deck 1 slide 36
 def centered_cosine_sim(u, v):
-  
+  # center and set up sparse data to be used in calculations
+  vector_u = center_and_nan_to_zero(u)
+  vector_v = center_and_nan_to_zero(v)
+  dot = np.dot(vector_v, vector_u)
 
-  return None
+  # calculate the denominator of the pearson correlation
+  denominator_v = 0 
+  denominator_u = 0
+  for i in vector_v:
+    denominator_v = denominator_v + (i)**2
+
+  for j in vector_u:
+    denominator_u = denominator_u + (j)**2
+
+  denominator = denominator_u * denominator_v
+
+  return dot / denominator
+
+
 
 # New function to handle vector-matrix pairs that may have sparse data
 def fast_centered_cosine_sim():

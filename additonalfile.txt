@@ -1,0 +1,14 @@
+MMD Exercise 10/30/24
+
+- no solutions for exercise sheets, unsure if it will be released at any point
+- fine if you just submit python files or jupyter notebook and if their were tests to run and if you didnt do it in a notebook we can just write results down in a file and submit that file
+- comments in code also nice
+- more guidance may be given in future exercise sheets
+
+ex1
+complete code implementations:
+use np.dot transpose util matrix with .T
+np.argsort(similarities[users_who_rated])
+np.dot(sim[beset_among], orig_util[item_index, best_among]) / np.sum(np.abs(sim[best_among]))
+
+ex2
